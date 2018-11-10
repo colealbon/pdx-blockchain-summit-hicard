@@ -15,6 +15,7 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
 });
 
 module.exports = {
+  node: {fs: "empty"},
   entry: './src/index.js',
   target: 'web',
   output: {

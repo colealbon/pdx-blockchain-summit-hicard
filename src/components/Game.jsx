@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import Card from './Card.jsx';
 
-export default class Game extends Component {
+import shuffle from '../lib/shuffle.js'
 
+let beacon = require('nist-randomness-beacon')
+
+
+
+export default class Game extends Component {
   constructor(props) {
   	super(props);
   	this.state = {
-      ourCard: 'A',
-      theirCard: '3',
       deck: [
       {suit: '&spades;', size: 'A'},
       {suit: '&spades;', size: '2'},
@@ -56,7 +59,7 @@ export default class Game extends Component {
       {suit: '&clubs;', size: '6'},
       {suit: '&clubs;', size: '7'},
       {suit: '&clubs;', size: '8'},
-      {suit: 'clubs;', size: '9'},
+      {suit: '&clubs;', size: '9'},
       {suit: '&clubs;', size: '10'},
       {suit: '&clubs;', size: 'J'},
       {suit: '&clubs;', size: 'Q'},
@@ -66,6 +69,40 @@ export default class Game extends Component {
   	};
   }
 
+  reevaluateCard(rando) {
+
+    shuffle(this.state.deck, rando.localRandomValue)
+    this.setState({
+      ourCard: this.state.deck[0],
+      theirCard: this.state.deck[1]
+    })
+  }
+
+  componentWillMount() {
+    let timestamp = Date.now();
+
+    const rando = {
+      localRandomValue: "979142837A30C60B7E84351B37626F742197474E23E349D5287C82C63ABF62C3AA272BBB1D013C5EDECB2184E2EB8A901C70DCF59F10A75371E11FB1BB7F21A9",
+      pulseIndex: 154703
+    }
+
+    this.reevaluateCard(rando)
+
+    /*
+    beacon // unusable in a browser
+    .getMostRecentPulse()
+    .then(res => {
+        this.setState({
+          localRandomValue: this.pulse.localRandomValue,
+          pulseIndex: this.pulse.pulseIndex
+        })
+
+    })
+    .catch(err => {
+      console.error(err)
+    })
+    */
+  }
   render() {
    const { ourCard } = this.state;
    const { theirCard } = this.state;
@@ -73,8 +110,8 @@ export default class Game extends Component {
    return (
     <div>
     <br></br>
-    our card: <Card size='4' suit='h'></Card> &nbsp;
-    their card:  <Card size='5' suit='S'></Card>
+    our card: <Card size={ourCard.size} suit={ourCard.suit}></Card> &nbsp;
+    their card:  <Card size={theirCard.size} suit={theirCard.suit}></Card>
     </div>
    );
   }

@@ -37,9 +37,14 @@
     "axios": "^0.18.0",
     "blockstack": "^0.15.0",
     "bootstrap": "^3.3.7",
+    "fs": "0.0.1-security",
+    "net": "^1.0.2",
+    "nist-randomness-beacon": "^2.0.4",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-router-dom": "^4.3.1",
+    "request": "^2.88.0",
+    "tls": "0.0.1",
     "uuid": "^3.3.2"
   }
 }
