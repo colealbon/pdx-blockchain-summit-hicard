@@ -3,6 +3,9 @@ import {
   isSignInPending,
   loadUserData,
   Person,
+  getFile,
+  putFile,
+  lookupProfile,
 } from 'blockstack';
 
 const avatarFallbackImage = 'https://s3.amazonaws.com/onename/avatar-placeholder.png';
