@@ -9,7 +9,6 @@ import {
 } from 'blockstack';
 
 const avatarFallbackImage = 'https://s3.amazonaws.com/onename/avatar-placeholder.png';
-
 export default class Profile extends Component {
   constructor(props) {
   	super(props);
@@ -20,17 +19,7 @@ export default class Profile extends Component {
         },
   	  	avatarUrl() {
   	  	  return avatarFallbackImage;
-  	  	},
-        rando() {
-          let therando = Math.random()
-          const options = { encrypt: false }
-          putFile('random.json', JSON.stringify({rando: random}), options)
-            .then(() => {
-              this.setState({
-                statuses: statuses
-              })
-            })
-        }
+  	  	}
   	  },
   	};
   }
@@ -41,7 +30,7 @@ export default class Profile extends Component {
 
   render() {
    const { handleSignOut } = this.props;
-   const { person, rando } = this.state;
+   const { person } = this.state;
    const { username } = this.state;
 
    return (
@@ -71,73 +60,40 @@ export default class Profile extends Component {
                </div>
              </div>
            </div>
-           {this.isLocal()
-
+           {
+             this.isLocal()
            }
-
          </div>
        </div>
      </div> : null
    );
-   }
-
-
-  componentWillMount() {
-    this.setState({
-      person: new Person(loadUserData().profile),
-      rando: Math.random()
-    });
   }
 
   fetchData() {
-   this.setState({ isLoading: true })
-   if (this.isLocal()) {
-     const options = { decrypt: false }
-     getFile('statuses.json', options)
-       .then((file) => {
-         var statuses = JSON.parse(file || '[]')
-         this.setState({
-           person: new Person(loadUserData().profile),
-           username: loadUserData().username,
-           statusIndex: statuses.length,
-           statuses: statuses,
-         })
-       })
-       .finally(() => {
-         this.setState({ isLoading: false })
-       })
-   } else {
-     const username = this.props.match.params.username
-
-     lookupProfile(username)
-       .then((profile) => {
-         this.setState({
-           person: new Person(profile),
-           username: username
-         })
-       })
-       .catch((error) => {
-         console.log('could not resolve profile')
-       })
-
-      const options = { username: username, decrypt: false }
- getFile('statuses.json', options)
-   .then((file) => {
-     var statuses = JSON.parse(file || '[]')
-     this.setState({
-       statusIndex: statuses.length,
-       statuses: statuses
-     })
-   })
-   .catch((error) => {
-     console.log('could not fetch statuses')
-   })
-   .finally(() => {
-     this.setState({ isLoading: false })
-   })
-   }
- }
-
+    if (this.isLocal()) {
+      const options = { decrypt: false }
+      this.setState({
+        person: new Person(loadUserData().profile),
+        username: loadUserData().username
+      })
+    }
+    else {
+      const username = this.props.match.params.username
+      lookupProfile(username)
+      .then((profile) => {
+        this.setState({
+          person: new Person(profile),
+          username: username
+        })
+      })
+      .catch((error) => {
+        console.log('could not resolve profile')
+      })
+      .finally(() => {
+        this.setState({ isLoading: false })
+      })
+    }
+  }
   componentDidMount() {
     this.fetchData()
   }
