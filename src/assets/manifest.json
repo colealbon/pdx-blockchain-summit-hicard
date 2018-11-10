@@ -1,10 +1,12 @@
 {
-  "name": "Hello, Blockstack",
+  "name": "High Card",
   "start_url": "localhost:8080",
-  "description": "A simple demo of Blockstack Auth",
-  "icons": [{
-    "src": "http://localhost:8080/icon-192x192.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  }]
+  "description": "A simple App between two players to see who gets the High Card from a deck of cards",
+  "icons": [
+    {
+      "src": "http://localhost:8080/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
 }
