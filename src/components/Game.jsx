@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Card from './Card.jsx';
+
 export default class Game extends Component {
 
   constructor(props) {
@@ -16,8 +18,8 @@ export default class Game extends Component {
    return (
     <div>
     <br></br>
-    our card: { ourCard } &nbsp;
-    their card: { theirCard }
+    our card: <Card size='4' suit='h'></Card> &nbsp;
+    their card:  <Card size='5' suit='S'></Card>
     </div>
    );
   }
