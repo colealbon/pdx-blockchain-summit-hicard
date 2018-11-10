@@ -34,7 +34,7 @@ export default class Profile extends Component {
 
      let newGame = {
        id: uuidv4(),
-       text: shufflerBytes,
+       shuffler: shufflerBytes,
        created_at: Date.now(),
        opponent: opponentId
      }
