@@ -35,34 +35,110 @@ export default class Profile extends Component {
   	};
   }
 
-  render() {
-    const { handleSignOut } = this.props;
-    const { person, rando } = this.state;
-    return (
-      !isSignInPending() ?
-      <div className="panel-welcome" id="section-2">
-        <div className="avatar-section">
-          <img src={ person.avatarUrl() ? person.avatarUrl() : avatarFallbackImage } className="img-rounded avatar" id="avatar-image" />
-        </div>
-        <h1>Hello, <span id="heading-name">{ person.name() ? person.name() : 'Nameless Person' }</span>!</h1>
-        <h2>random: { JSON.stringify(rando) }</h2>
-        <p className="lead">
-          <button
-            className="btn btn-primary btn-lg"
-            id="signout-button"
-            onClick={ handleSignOut.bind(this) }
-          >
-            Logout
-          </button>
-        </p>
-      </div> : null
-    );
+  isLocal() {
+    return this.props.match.params.username ? false : true
   }
+
+  render() {
+   const { handleSignOut } = this.props;
+   const { person, rando } = this.state;
+   const { username } = this.state;
+
+   return (
+     !isSignInPending() && person ?
+     <div className="container">
+       <div className="row">
+         <div className="col-md-offset-3 col-md-6">
+           <div className="col-md-12">
+             <div className="avatar-section">
+               <img
+                 src={ person.avatarUrl() ? person.avatarUrl() : avatarFallbackImage }
+                 className="img-rounded avatar"
+                 id="avatar-image"
+               />
+               <div className="username">
+                 <h1>
+                   <span id="heading-name">{ person.name() ? person.name()
+                     : 'Nameless Person' }</span>
+                 </h1>
+                 <span>{username}</span>
+                 {this.isLocal() &&
+                   <span>
+                     &nbsp;|&nbsp;
+                     <a onClick={ handleSignOut.bind(this) }>(Logout)</a>
+                   </span>
+                 }
+               </div>
+             </div>
+           </div>
+           {this.isLocal()
+
+           }
+
+         </div>
+       </div>
+     </div> : null
+   );
+   }
+
 
   componentWillMount() {
     this.setState({
       person: new Person(loadUserData().profile),
       rando: Math.random()
     });
+  }
+
+  fetchData() {
+   this.setState({ isLoading: true })
+   if (this.isLocal()) {
+     const options = { decrypt: false }
+     getFile('statuses.json', options)
+       .then((file) => {
+         var statuses = JSON.parse(file || '[]')
+         this.setState({
+           person: new Person(loadUserData().profile),
+           username: loadUserData().username,
+           statusIndex: statuses.length,
+           statuses: statuses,
+         })
+       })
+       .finally(() => {
+         this.setState({ isLoading: false })
+       })
+   } else {
+     const username = this.props.match.params.username
+
+     lookupProfile(username)
+       .then((profile) => {
+         this.setState({
+           person: new Person(profile),
+           username: username
+         })
+       })
+       .catch((error) => {
+         console.log('could not resolve profile')
+       })
+
+      const options = { username: username, decrypt: false }
+ getFile('statuses.json', options)
+   .then((file) => {
+     var statuses = JSON.parse(file || '[]')
+     this.setState({
+       statusIndex: statuses.length,
+       statuses: statuses
+     })
+   })
+   .catch((error) => {
+     console.log('could not fetch statuses')
+   })
+   .finally(() => {
+     this.setState({ isLoading: false })
+   })
+   }
+ }
+
+  componentDidMount() {
+    this.fetchData()
   }
 }
