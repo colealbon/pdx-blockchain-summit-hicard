@@ -82,7 +82,7 @@ export default class Game extends Component {
     let timestamp = Date.now();
 
     const rando = {
-      localRandomValue: "979142837A30C60B7E84351B37626F742197474E23E349D5287C82C63ABF62C3AA272BBB1D013C5EDECB2184E2EB8A901C70DCF59F10A75371E11FB1BB7F21A9",
+      localRandomValue: '979142837A30C60B7E84351B37626F742197474E23E349D5287C82C63ABF62C3AA272BBB1D013C5EDECB2184E2EB8A901C70DCF59F10A75371E11FB1BB7F21A9'.split('').sort(function(){return 0.5-Math.random()}).join(''),
       pulseIndex: 154703
     }
 
@@ -112,6 +112,8 @@ export default class Game extends Component {
     <br></br>
     our card: <Card size={ourCard.size} suit={ourCard.suit}></Card> &nbsp;
     their card:  <Card size={theirCard.size} suit={theirCard.suit}></Card>
+    <br></br>
+    winner:  {(theirCard.size > ourCard.size) ? 'them' : 'us' }
     </div>
    );
   }
