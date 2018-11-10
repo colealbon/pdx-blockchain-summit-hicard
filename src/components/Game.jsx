@@ -61,7 +61,7 @@ export default class Game extends Component {
       {suit: '&clubs;', size: 'J'},
       {suit: '&clubs;', size: 'Q'},
       {suit: '&clubs;', size: 'K'},
-      ]
+    ]
 
   	};
   }
