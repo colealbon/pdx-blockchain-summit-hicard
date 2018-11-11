@@ -15,7 +15,7 @@ export default class Profile extends Component {
   constructor(props) {
   	super(props);
   	this.state = {
-  	  person: {
+  	  me: {
   	  	name() {
           return 'Anonymous';
         },
@@ -50,68 +50,77 @@ export default class Profile extends Component {
        })
    }
 
+  renderPerson(person, username) {
+    const { handleSignOut } = this.props;
+
+    return (
+      <div className="col-md-12">
+        <div className="avatar-section">
+          <img
+            src={ person != null && person.avatarUrl() ? person.avatarUrl() : avatarFallbackImage }
+            className="img-rounded avatar"
+            id="avatar-image"
+          />
+          <div className="username">
+            <h1>
+              <span id="heading-name">{ person != null && person.name() ? person.name()
+                : 'Nameless Person' }</span>
+            </h1>
+            <span>{username}</span>
+            {this.isLocal() &&
+              <span>
+                &nbsp;|&nbsp;
+                <a onClick={ handleSignOut.bind(this) }>(Logout)</a>
+              </span>
+            }
+          </div>
+        </div>
+    </div>);
+  }
+
   render() {
-   const { handleSignOut } = this.props;
-   const { person } = this.state;
+   const { me } = this.state;
    const { username } = this.state;
 
    return (
-     !isSignInPending() && person ?
+     !isSignInPending() && me ?
      <div className="container">
        <div className="row">
-         <div className="col-md-offset-3 col-md-6">
-           <div className="col-md-12">
-             <div className="avatar-section">
-               <img
-                 src={ person.avatarUrl() ? person.avatarUrl() : avatarFallbackImage }
-                 className="img-rounded avatar"
-                 id="avatar-image"
-               />
-               <div className="username">
-                 <h1>
-                   <span id="heading-name">{ person.name() ? person.name()
-                     : 'Nameless Person' }</span>
-                 </h1>
-                 <span>{username}</span>
-                 {this.isLocal() &&
-                   <span>
-                     &nbsp;|&nbsp;
-                     <a onClick={ handleSignOut.bind(this) }>(Logout)</a>
-                   </span>
-                 }
-                 <Game></Game>
-               </div>
-             </div>
-           </div>
-           {
-             this.isLocal()
-           }
+         <div className="col-md-5">
+           {this.renderPerson(this.state.me, this.state.myUsername)}
          </div>
+         <div className="col-lg-2"><h2>vs.</h2></div>
+         <div className="col-md-4">
+           {this.renderPerson(this.state.them, this.state.theirUsername)}
+         </div>
+       </div>
+       <div className="row">
+         <Game></Game>
        </div>
      </div> : null
    );
   }
 
   fetchData() {
-    if (this.isLocal()) {
+    //fetch my data
       const options = { decrypt: false }
       getFile('high-cards.json', options)
         .then((file) => {
           var games = JSON.parse(file || '[]')
           this.setState({
-            person: new Person(loadUserData().profile),
-            username: loadUserData().username,
+            me: new Person(loadUserData().profile),
+            myUsername: loadUserData().username,
             games: games
           })
-        })
-    }
-    else {
+        });
+
+    //fetch their data
       const username = this.props.match.params.username
       lookupProfile(username)
       .then((profile) => {
         this.setState({
-          person: new Person(profile),
-          username: username
+          them: new Person(profile),
+          theirUsername: username
         })
       })
       .catch((error) => {
@@ -119,10 +128,10 @@ export default class Profile extends Component {
       })
       .finally(() => {
         this.setState({ isLoading: false })
-      })
+      });
 
-      const options = { username: username, decrypt: false }
-      getFile('high-cards.json', options)
+      const options2 = { username: username, decrypt: false }
+      getFile('high-cards.json', options2)
       .then((file) => {
          var deseralizedGames = JSON.parse(file || '[]')
          this.setState({
@@ -132,13 +141,13 @@ export default class Profile extends Component {
       .catch((error) => {
           console.log('could not fetch games')
       })
-  .finally(() => {
-    this.setState({ isLoading: false })
-  })
-    }
-  }
+      .finally(() => {
+        this.setState({ isLoading: false })
+      });
+  };
+
   componentDidMount() {
-    this.fetchData()
+    this.fetchData();
     //this.saveGameResults("D95849AA570A03231B69C65749054A6C8770C7345F8673EC12FA94B302A1ECCC9A90AF79B356FE648479EA59AF6BE7094AD323C3AC4B7373016D6A078625BF43", "jhager.id.blockstack")
   }
 }
